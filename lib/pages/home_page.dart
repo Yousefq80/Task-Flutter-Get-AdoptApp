@@ -34,16 +34,28 @@ class HomePage extends StatelessWidget {
               },
               child: const Text("GET"),
             ),
-            GridView.builder(
-                shrinkWrap: true,
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  childAspectRatio: MediaQuery.of(context).size.width /
-                      (MediaQuery.of(context).size.height),
-                ),
-                physics: const NeverScrollableScrollPhysics(), // <- Here
-                itemCount: pets.length,
-                itemBuilder: (context, index) => PetCard(pet: pets[index])),
+            FutureBuilder(
+                future: context.read<PetsProvider>().getPets(),
+                builder: (context, snapshot) {
+                  print(snapshot.connectionState);
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return CircularProgressIndicator();
+                  } else {
+                    return GridView.builder(
+                        shrinkWrap: true,
+                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 2,
+                          childAspectRatio: MediaQuery.of(context).size.width /
+                              (MediaQuery.of(context).size.height),
+                        ),
+                        physics:
+                            const NeverScrollableScrollPhysics(), // <- Here
+                        itemCount: pets.length,
+                        itemBuilder: (context, index) =>
+                            PetCard(pet: pets[index]));
+                  }
+                  ;
+                }),
           ],
         ),
       ),
